@@ -25,17 +25,21 @@ app.filter('attendeeNotOrganizerFilter',
 		'use strict';
 
 		return function (attendees, organizer) {
-			if (organizer === '') {
-				return attendees;
+			if (typeof organizer !== 'string' || organizer === '') {
+				return Array.isArray(attendees) ? attendees : [];
 			}
 
-			if (attendees === null) {
-				return null;
+			if (!Array.isArray(attendees)) {
+				return [];
 			}
 
 			var organizerValue = 'MAILTO:' + organizer;
 			return attendees.filter(function(element) {
-				return element.value !== organizerValue;
+				if (typeof element !== 'object') {
+					return false;
+				} else {
+					return element.value !== organizerValue;
+				}
 			});
 		};
 	}

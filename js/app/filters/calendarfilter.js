@@ -23,16 +23,18 @@
 app.filter('calendarFilter', [
 	function() {
 		'use strict';
-		return function (item) {
-			var filter = [];
-			if (item.length > 0) {
-				for (var i = 0; i < item.length; i++) {
-					if (item[i].writable === true) {
-						filter.push(item[i]);
-					}
-				}
+		return function (calendars) {
+			if (!Array.isArray(calendars)) {
+				return [];
 			}
-			return filter;
+
+			return calendars.filter(function(element) {
+				if (typeof element !== 'object') {
+					return false;
+				} else {
+					return element.writable;
+				}
+			});
 		};
 	}
 ]);
