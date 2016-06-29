@@ -89,6 +89,7 @@ app.factory('Calendar', ['$rootScope', '$filter', 'VEventService', 'TimezoneServ
 				locked: false,
 				editingShares: false
 			},
+			published: false,
 			registerCallback: function(prop, callback) {
 				this._callbacks[prop] = callback;
 			},
@@ -117,6 +118,9 @@ app.factory('Calendar', ['$rootScope', '$filter', 'VEventService', 'TimezoneServ
 			},
 			toggleSharesEditor: function() {
 				this.list.editingShares = !this.list.editingShares;
+			},
+			tooglePublish: function() {
+				this.published = !this.published;
 			}
 		});
 	}

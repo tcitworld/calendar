@@ -554,6 +554,23 @@ app.controller('CalendarListController', ['$scope', '$rootScope', '$window', 'Ca
 			calendar.toggleSharesEditor();
 		};
 
+		$scope.togglePublish = function(calendar) {
+			console.log('inside');
+			if (!calendar.published) {
+				CalendarService.publish(calendar).then(function () {
+					calendar.tooglePublish();
+					$scope.$apply();
+					console.log('published');
+				});
+			} else {
+				CalendarService.unpublish(calendar).then(function () {
+					$scope.$apply();
+					calendar.tooglePublish();
+					console.log('unpublished');
+				});
+			}
+		};
+
 		$scope.prepareUpdate = function (calendar) {
 			calendar.prepareUpdate();
 		};
@@ -2270,6 +2287,7 @@ app.factory('Calendar', ['$rootScope', '$filter', 'VEventService', 'TimezoneServ
 				locked: false,
 				editingShares: false
 			},
+			published: false,
 			registerCallback: function(prop, callback) {
 				this._callbacks[prop] = callback;
 			},
@@ -2298,6 +2316,9 @@ app.factory('Calendar', ['$rootScope', '$filter', 'VEventService', 'TimezoneServ
 			},
 			toggleSharesEditor: function() {
 				this.list.editingShares = !this.list.editingShares;
+			},
+			tooglePublish: function() {
+				this.published = !this.published;
 			}
 		});
 	}
@@ -3474,7 +3495,9 @@ app.service('CalendarService', ['DavClient', 'Calendar', function(DavClient, Cal
 		'{' + DavClient.NS_OWNCLOUD + '}calendar-enabled',
 		'{' + DavClient.NS_DAV + '}acl',
 		'{' + DavClient.NS_DAV + '}owner',
-		'{' + DavClient.NS_OWNCLOUD + '}invite'
+		'{' + DavClient.NS_OWNCLOUD + '}invite',
+		'{' + DavClient.NS_OWNCLOUD + '}publish-calendar',
+		'{' + DavClient.NS_OWNCLOUD + '}unpublish-calendar',
 	];
 
 	this._xmls = new XMLSerializer();
@@ -3787,6 +3810,48 @@ app.service('CalendarService', ['DavClient', 'Calendar', function(DavClient, Cal
 		});
 	};
 
+	this.publish = function(calendar) {
+		var xmlDoc = document.implementation.createDocument('', '', null);
+		var oShare = xmlDoc.createElement('o:publish-calendar');
+		oShare.setAttribute('xmlns:d', 'DAV:');
+		oShare.setAttribute('xmlns:o', 'http://owncloud.org/ns');
+		xmlDoc.appendChild(oShare);
+
+		var headers = {
+			'Content-Type' : 'application/xml; charset=utf-8',
+			requesttoken : oc_requesttoken
+		};
+		var body = this._xmls.serializeToString(oShare);
+		return DavClient.request('POST', calendar.url, headers, body).then(function(response) {
+			if (response.status === 200) {
+				return true;
+			} else {
+				return false;
+			}
+		});
+	};
+
+	this.unpublish = function(calendar) {
+		var xmlDoc = document.implementation.createDocument('', '', null);
+		var oShare = xmlDoc.createElement('o:unpublish-calendar');
+		oShare.setAttribute('xmlns:d', 'DAV:');
+		oShare.setAttribute('xmlns:o', 'http://owncloud.org/ns');
+		xmlDoc.appendChild(oShare);
+
+		var headers = {
+			'Content-Type' : 'application/xml; charset=utf-8',
+			requesttoken : oc_requesttoken
+		};
+		var body = this._xmls.serializeToString(oShare);
+		return DavClient.request('POST', calendar.url, headers, body).then(function(response) {
+			if (response.status === 200) {
+				return true;
+			} else {
+				return false;
+			}
+		});
+	};
+
 	this._createXMLForProperty = function(xmlDoc, propName, value) {
 		switch(propName) {
 			case 'enabled':
@@ -3839,6 +3904,7 @@ app.service('CalendarService', ['DavClient', 'Calendar', function(DavClient, Cal
 			},
 			owner: null,
 			shareable: props.canWrite,
+			publishable: props.canBePublished,
 			sharedWith: {
 				users: [],
 				groups: []
@@ -3901,6 +3967,7 @@ app.service('CalendarService', ['DavClient', 'Calendar', function(DavClient, Cal
 
 	this._getACLFromResponse = function(props) {
 		var canWrite = false;
+		var canBePublished = true;
 		var acl = props['{' + DavClient.NS_DAV + '}acl'];
 		if (acl) {
 			for (var k=0; k < acl.length; k++) {
@@ -3919,6 +3986,7 @@ app.service('CalendarService', ['DavClient', 'Calendar', function(DavClient, Cal
 			}
 		}
 		props.canWrite = canWrite;
+		props.canBePublished = canBePublished;
 	};
 
 	this._isUriAlreadyTaken = function(uri) {

@@ -35,6 +35,13 @@
 <span class="utils" ng-if="!calendar.list.locked" ng-show="!calendar.list.edit">
 	<span class="action">
 		<span
+			ng-if="calendar.publishable"
+			class="calendarlist-icon publish icon-external permanent"
+			data-item-type="calendar" data-item="{{ calendar.id }}"
+			title="<?php p($l->t('Publish Calendar')) ?>"
+			ng-click="togglePublish(calendar)">
+		</span>
+		<span
 			ng-if="calendar.shareable"
 			class="calendarlist-icon share icon-share permanent"
 			data-item-type="calendar" data-item="{{ calendar.id }}"

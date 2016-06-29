@@ -62,6 +62,23 @@ app.controller('CalendarListController', ['$scope', '$rootScope', '$window', 'Ca
 			calendar.toggleSharesEditor();
 		};
 
+		$scope.togglePublish = function(calendar) {
+			console.log('inside');
+			if (!calendar.published) {
+				CalendarService.publish(calendar).then(function () {
+					calendar.tooglePublish();
+					$scope.$apply();
+					console.log('published');
+				});
+			} else {
+				CalendarService.unpublish(calendar).then(function () {
+					$scope.$apply();
+					calendar.tooglePublish();
+					console.log('unpublished');
+				});
+			}
+		};
+
 		$scope.prepareUpdate = function (calendar) {
 			calendar.prepareUpdate();
 		};
