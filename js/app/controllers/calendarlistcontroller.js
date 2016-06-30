@@ -68,13 +68,11 @@ app.controller('CalendarListController', ['$scope', '$rootScope', '$window', 'Ca
 				CalendarService.publish(calendar).then(function () {
 					calendar.tooglePublish();
 					$scope.$apply();
-					console.log('published');
 				});
 			} else {
 				CalendarService.unpublish(calendar).then(function () {
 					$scope.$apply();
 					calendar.tooglePublish();
-					console.log('unpublished');
 				});
 			}
 		};
@@ -237,5 +235,16 @@ app.controller('CalendarListController', ['$scope', '$rootScope', '$window', 'Ca
 				$scope.$apply();
 			}
 		});
+
+		/**
+		 * trigger visibility of published link
+		 */
+		$scope.showPublishedLink = function(calendar) {
+			calendar.list.showPublishedLink = true;
+		};
+
+		$scope.hidePublishedLink = function(calendar) {
+			calendar.list.showPublishedLink = false;
+		};
 	}
 ]);

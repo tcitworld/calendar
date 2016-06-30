@@ -43,8 +43,6 @@ app.service('CalendarService', ['DavClient', 'Calendar', function(DavClient, Cal
 		'{' + DavClient.NS_DAV + '}acl',
 		'{' + DavClient.NS_DAV + '}owner',
 		'{' + DavClient.NS_OWNCLOUD + '}invite',
-		'{' + DavClient.NS_OWNCLOUD + '}publish-calendar',
-		'{' + DavClient.NS_OWNCLOUD + '}unpublish-calendar',
 	];
 
 	this._xmls = new XMLSerializer();
@@ -371,7 +369,8 @@ app.service('CalendarService', ['DavClient', 'Calendar', function(DavClient, Cal
 		var body = this._xmls.serializeToString(oShare);
 		return DavClient.request('POST', calendar.url, headers, body).then(function(response) {
 			if (response.status === 200) {
-				return true;
+				console.log(response.responseText);
+				return response.responseText;
 			} else {
 				return false;
 			}

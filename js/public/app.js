@@ -729,6 +729,17 @@ app.controller('CalendarListController', ['$scope', '$rootScope', '$window', 'Ca
 				$scope.$apply();
 			}
 		});
+
+		/**
+		 * trigger visibility of published link
+		 */
+		$scope.showPublishedLink = function(calendar) {
+			calendar.list.showPublishedLink = true;
+		};
+
+		$scope.hidePublishedLink = function(calendar) {
+			calendar.list.showPublishedLink = false;
+		};
 	}
 ]);
 
@@ -3824,7 +3835,8 @@ app.service('CalendarService', ['DavClient', 'Calendar', function(DavClient, Cal
 		var body = this._xmls.serializeToString(oShare);
 		return DavClient.request('POST', calendar.url, headers, body).then(function(response) {
 			if (response.status === 200) {
-				return true;
+				console.log(response.responseText);
+				return response.responseText;
 			} else {
 				return false;
 			}

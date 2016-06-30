@@ -35,13 +35,6 @@
 <span class="utils" ng-if="!calendar.list.locked" ng-show="!calendar.list.edit">
 	<span class="action">
 		<span
-			ng-if="calendar.publishable"
-			class="calendarlist-icon publish icon-external permanent"
-			data-item-type="calendar" data-item="{{ calendar.id }}"
-			title="<?php p($l->t('Publish Calendar')) ?>"
-			ng-click="togglePublish(calendar)">
-		</span>
-		<span
 			ng-if="calendar.shareable"
 			class="calendarlist-icon share icon-share permanent"
 			data-item-type="calendar" data-item="{{ calendar.id }}"
@@ -102,6 +95,11 @@
 	<button class="btn icon-close button-next-to-input" ng-click="hideCalDAVLink(calendar)"></button>
 </fieldset>
 <div ng-show="calendar.list.editingShares" class="calendarShares">
+	<input type="checkbox" name="editable"
+			 id="checkbox_publish_calendar_{{calendar.tmpId}}"
+			 ng-model="calendar.publisable" value="edit"
+			 ng-change="togglePublish(calendar)">
+	<label for="checkbox_publish_calendar_{{calendar.tmpId}}"> <?php p($l->t('Publish')); ?></label>
 	<i ng-show="loadingSharees" class="glyphicon glyphicon-refresh"></i>
 	<input
 		type="text"
@@ -151,4 +149,8 @@
 			</span>
 		</li>
 	</ul>
+	<fieldset ng-show="calendar.list.showCalDAVLink" class="editfieldset">
+		<input class="input-with-button-on-right-side" type="text" ng-model="calendar.caldav" readonly />
+		<button class="btn icon-close button-next-to-input" ng-click="hideCalDAVLink(calendar)"></button>
+	</fieldset>
 </div>

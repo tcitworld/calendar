@@ -112,7 +112,7 @@
 #app-navigation .app-navigation-list-item .utils .action span {
 	opacity: .3;
 }
-#app-navigation .app-navigation-list-item .utils .action:hover span {
+#app-navigation .app-navigation-list-item .utils .action span:hover {
 	opacity: 1;
 }
 #app-navigation .app-navigation-list-item .active {
